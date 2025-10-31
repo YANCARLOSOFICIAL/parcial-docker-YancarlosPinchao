@@ -4,207 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios - PHP + MySQL</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        .content {
-            padding: 30px;
-        }
-        .form-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-        .form-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: transform 0.2s;
-            font-weight: 600;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        .users-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-        .user-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.2s;
-        }
-        .user-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        .user-card strong {
-            color: #667eea;
-            font-size: 1.1em;
-        }
-        .user-card p {
-            margin: 8px 0;
-            color: #666;
-        }
-        .message {
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 0.9em;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Sistema de Gestión de Usuarios</h1>
-            <p>Aplicación PHP + MySQL en Docker</p>
+            <div class="brand">
+                <div class="logo">YS</div>
+                <div>
+                    <h1>Gestión de Usuarios</h1>
+                    <p class="muted">Aplicación PHP + MySQL en Docker</p>
+                </div>
+            </div>
+            <div class="actions">
+                <a class="btn" href="#">Ir al repositorio</a>
+            </div>
         </div>
         
         <div class="content">
-            <!-- Formulario para agregar usuario -->
-            <div class="form-section">
-                <h2>➕ Agregar Nuevo Usuario</h2>
-                <form action="users.php" method="POST">
-                    <div class="form-group">
-                        <label for="nombre">Nombre completo:</label>
-                        <input type="text" id="nombre" name="nombre" required placeholder="Ej: Juan Pérez">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Correo electrónico:</label>
-                        <input type="email" id="email" name="email" required placeholder="Ej: juan@example.com">
-                    </div>
-                    <button type="submit" class="btn">Agregar Usuario</button>
-                </form>
-            </div>
+            <div>
+                <!-- Formulario para agregar usuario -->
+                <div class="card form-section">
+                    <h2>➕ Agregar Nuevo Usuario</h2>
+                    <form id="user-form" action="users.php" method="POST">
+                        <input type="hidden" id="user-id" name="id" value="">
+                        <div class="form-group">
+                            <label for="nombre">Nombre completo:</label>
+                            <input type="text" id="nombre" name="nombre" required placeholder="Ej: Juan Pérez">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo electrónico:</label>
+                            <input type="email" id="email" name="email" required placeholder="Ej: juan@example.com">
+                        </div>
 
-            <!-- Mostrar mensajes -->
-            <?php
-            if (isset($_GET['success'])) {
-                echo '<div class="message success">✅ Usuario agregado exitosamente</div>';
-            }
-            if (isset($_GET['error'])) {
-                echo '<div class="message error">❌ Error: ' . htmlspecialchars($_GET['error']) . '</div>';
-            }
-            ?>
+                        <!-- Botón full-width visible siempre -->
+                        <button type="submit" id="primary-submit" class="btn fullwidth">Guardar Usuario</button>
 
-            <!-- Lista de usuarios -->
-            <div class="users-section">
-                <h2>👥 Lista de Usuarios</h2>
+                        <div class="form-actions" style="margin-top:8px">
+                            <button type="submit" id="submit-btn" class="btn" style="display:none">Guardar Usuario</button>
+                            <button type="button" id="cancel-btn" class="btn secondary" style="display:none;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+
+                <!-- Mostrar mensajes -->
                 <?php
-                // Configuración de conexión a la base de datos
-                $host = 'db';
-                $dbname = $_ENV['MYSQL_DATABASE'] ?? 'usuarios_db';
-                $username = $_ENV['MYSQL_USER'] ?? 'usuario';
-                $password = $_ENV['MYSQL_PASSWORD'] ?? 'password';
-
-                try {
-                    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    
-                    $stmt = $pdo->query("SELECT id, nombre, email FROM users ORDER BY id DESC");
-                    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    if (count($users) > 0) {
-                        foreach ($users as $user) {
-                            echo '<div class="user-card">';
-                            echo '<strong>ID: ' . htmlspecialchars($user['id']) . '</strong>';
-                            echo '<p><strong>Nombre:</strong> ' . htmlspecialchars($user['nombre']) . '</p>';
-                            echo '<p><strong>Email:</strong> ' . htmlspecialchars($user['email']) . '</p>';
-                            echo '</div>';
-                        }
-                    } else {
-                        echo '<p style="text-align: center; color: #999; padding: 20px;">No hay usuarios registrados aún.</p>';
-                    }
-                } catch (PDOException $e) {
-                    echo '<div class="message error">Error de conexión: ' . htmlspecialchars($e->getMessage()) . '</div>';
+                if (isset($_GET['success'])) {
+                    echo '<div class="message success">✅ Usuario agregado exitosamente</div>';
+                }
+                if (isset($_GET['error'])) {
+                    echo '<div class="message error">❌ Error: ' . htmlspecialchars($_GET['error']) . '</div>';
                 }
                 ?>
+
+                <!-- Lista de usuarios -->
+                <div class="card users-section" style="margin-top:18px;">
+                    <h2>👥 Lista de Usuarios</h2>
+                    <div class="users-list">
+                    <?php
+                    // Configuración de conexión a la base de datos
+                    $host = 'db';
+                    $dbname = $_ENV['MYSQL_DATABASE'] ?? 'usuarios_db';
+                    $username = $_ENV['MYSQL_USER'] ?? 'usuario';
+                    $password = $_ENV['MYSQL_PASSWORD'] ?? 'password';
+
+                    try {
+                        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        
+                        $stmt = $pdo->query("SELECT id, nombre, email FROM users ORDER BY id DESC");
+                        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        if (count($users) > 0) {
+                            foreach ($users as $user) {
+                                // Añadimos botón de editar con data-attributes para JS
+                                echo '<div class="user-card">';
+                                echo '<div class="user-meta"><div><span class="user-name">' . htmlspecialchars($user['nombre']) . '</span><div class="user-email">' . htmlspecialchars($user['email']) . '</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="muted">ID: ' . htmlspecialchars($user['id']) . '</div><div><button type="button" class="btn secondary edit-btn" data-id="' . htmlspecialchars($user['id']) . '" data-nombre="' . htmlspecialchars($user['nombre'], ENT_QUOTES) . '" data-email="' . htmlspecialchars($user['email'], ENT_QUOTES) . '">Editar</button></div></div></div>';
+                                echo '</div>';
+                            }
+                        } else {
+                            echo '<p style="text-align: center; color: #999; padding: 20px;">No hay usuarios registrados aún.</p>';
+                        }
+                    } catch (PDOException $e) {
+                        echo '<div class="message error">Error de conexión: ' . htmlspecialchars($e->getMessage()) . '</div>';
+                    }
+                    ?>
+                    </div>
+                </div>
             </div>
+
         </div>
 
         <div class="footer">
             <p>Proyecto Docker - PHP 8.2 + MySQL 8 | Parcial Práctico Avanzado</p>
         </div>
     </div>
+    <script>
+        // JavaScript mínimo para habilitar edición inline del formulario
+        (function(){
+            const form = document.getElementById('user-form');
+            const idInput = document.getElementById('user-id');
+            const nombreInput = document.getElementById('nombre');
+            const emailInput = document.getElementById('email');
+            const submitBtn = document.getElementById('submit-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+
+            function resetForm(){
+                idInput.value = '';
+                nombreInput.value = '';
+                emailInput.value = '';
+                submitBtn.textContent = 'Guardar Usuario';
+                cancelBtn.style.display = 'none';
+                hideFloating();
+            }
+
+            // Delegación de eventos para botones editar
+            document.addEventListener('click', function(e){
+                const el = e.target;
+                if (el && el.classList && el.classList.contains('edit-btn')){
+                    const uid = el.getAttribute('data-id');
+                    const uname = el.getAttribute('data-nombre');
+                    const uemail = el.getAttribute('data-email');
+                    idInput.value = uid || '';
+                    nombreInput.value = uname || '';
+                    emailInput.value = uemail || '';
+                    submitBtn.textContent = 'Guardar cambios';
+                    cancelBtn.style.display = 'inline-flex';
+                    // scroll to form
+                    nombreInput.scrollIntoView({behavior:'smooth',block:'center'});
+                    showFloating();
+                }
+            });
+
+            cancelBtn.addEventListener('click', function(){
+                resetForm();
+            });
+
+            // Floating save button
+            const floatBtn = document.createElement('button');
+            floatBtn.id = 'floating-save-btn';
+            floatBtn.className = 'btn';
+            floatBtn.type = 'button';
+            floatBtn.textContent = 'Guardar Usuario';
+            floatBtn.style.display = 'inline-flex';
+            floatBtn.style.zIndex = 9999;
+            floatBtn.addEventListener('click', function(){
+                // trigger submit
+                submitBtn.click();
+            });
+            floatBtn.setAttribute('aria-hidden','false');
+            floatBtn.setAttribute('id','floating-save');
+            document.body.appendChild(floatBtn);
+
+            function showFloating(){
+                floatBtn.style.display = 'inline-flex';
+            }
+            function hideFloating(){
+                floatBtn.style.display = 'inline-flex';
+            }
+
+            // Show floating when form inputs are focused
+            [nombreInput, emailInput].forEach(function(input){
+                input.addEventListener('focus', function(){ showFloating(); });
+                input.addEventListener('blur', function(){
+                    // small timeout to allow click
+                    setTimeout(function(){
+                        if (!document.activeElement || (document.activeElement !== nombreInput && document.activeElement !== emailInput)){
+                            // keep visible briefly
+                            hideFloating();
+                        }
+                    }, 200);
+                });
+            });
+
+            // Optional: reset form on successful submission when URL has success param
+            if (window.location.search.indexOf('success') !== -1){
+                // clear form after action
+                resetForm();
+            }
+        })();
+    </script>
 </body>
 </html>

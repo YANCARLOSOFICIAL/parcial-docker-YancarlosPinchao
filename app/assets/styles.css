@@ -1,0 +1,117 @@
+/* styles.css - UI mejorada: paleta moderna, tipografía y responsive */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+:root{
+  --bg-grad-1: 245 246 250; /* light */
+  --accent-1: 72 61 139;   /* indigo-ish */
+  --accent-2: 99 102 241;  /* blue-500 */
+  --muted: 100 116 139;    /* gray-600 */
+  --success: 16 185 129;   /* green-500 */
+  --danger: 220 38 38;     /* red-600 */
+  --card: 255 255 255;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: linear-gradient(180deg, rgba(var(--bg-grad-1),1) 0%, rgba(250,250,252,1) 100%);
+  color: rgb(var(--muted));
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:28px;
+}
+
+.container{max-width:1000px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.9), rgba(255,255,255,0.95));border-radius:12px;box-shadow:0 12px 30px rgba(15,23,42,0.08);overflow:hidden}
+
+.header{display:flex;align-items:center;justify-content:space-between;padding:28px 32px;background:linear-gradient(90deg,rgba(var(--accent-1),0.95), rgba(var(--accent-2),0.95));color:#fff}
+.brand{display:flex;gap:14px;align-items:center}
+.brand .logo{background:rgba(255,255,255,0.12);width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700}
+.brand h1{font-size:1.25rem;margin:0;font-weight:700}
+.brand p{font-size:0.85rem;margin:0;opacity:0.92}
+
+.content{display:grid;grid-template-columns:1fr 420px;gap:26px;padding:32px}
+
+.card{background:rgb(var(--card));border-radius:10px;padding:20px;box-shadow:0 6px 18px rgba(15,23,42,0.04)}
+
+.form-section h2,.users-section h2{margin:0 0 14px 0;color:rgb(var(--accent-1));font-size:1.1rem}
+
+.form-group{margin-bottom:14px}
+.form-group label{display:block;margin-bottom:6px;color:rgb(var(--muted));font-weight:600}
+.form-group input{width:100%;padding:12px 14px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:#fbfdff;font-size:0.98rem}
+.form-group input:focus{outline:none;box-shadow:0 6px 18px rgba(var(--accent-2),0.08);border-color:rgba(var(--accent-2),0.35)}
+
+.btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(90deg, rgba(var(--success),1), rgba(var(--accent-2),1));color:white;padding:10px 16px;border-radius:9px;border:none;font-weight:700;cursor:pointer}
+.btn:active{transform:translateY(1px);opacity:0.98}
+
+/* secondary button style */
+.btn.secondary{background:transparent;color:rgb(var(--accent-1));border:1px solid rgba(var(--accent-1),0.12);box-shadow:none;padding:8px 12px;font-weight:700}
+.btn.secondary:hover{background:rgba(var(--accent-1),0.06)}
+
+/* Form actions ensure submit button is visible and accessible */
+.form-actions{display:flex;gap:12px;align-items:center;margin-top:16px}
+.form-actions .btn{min-width:160px}
+.form-actions .btn.secondary{min-width:110px}
+
+/* Make primary button more prominent */
+.form-actions .btn{box-shadow:0 8px 18px rgba(var(--success),0.14)}
+
+/* Sticky bottom action for small screens */
+@media (max-width:900px){
+  .form-actions{position:sticky;bottom:16px;padding:10px;background:transparent}
+  .form-actions .btn{flex:1}
+}
+
+/* Floating save button (high contrast, always visible) */
+#floating-save{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  z-index:99999;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:12px 18px;
+  border-radius:12px;
+  background: linear-gradient(90deg, rgba(var(--success),1), rgba(34,197,94,0.9));
+  color: #fff !important;
+  box-shadow: 0 12px 30px rgba(16,185,129,0.18);
+  font-weight:800;
+  min-width:160px;
+}
+
+@media (max-width:900px){
+  #floating-save{left:12px;right:12px;width:auto;display:inline-flex !important}
+}
+
+/* Full width primary button inside the form for guaranteed visibility */
+.btn.fullwidth{display:block;width:100%;text-align:center;padding:14px 18px;border-radius:10px;font-size:1rem}
+.card .btn.fullwidth{margin-top:10px}
+
+.message{padding:12px;border-radius:8px;margin-bottom:16px;font-weight:600}
+.message.success{background:rgba(var(--success),0.12);color:rgb(var(--success))}
+.message.error{background:rgba(var(--danger),0.12);color:rgb(var(--danger))}
+
+.users-list{display:flex;flex-direction:column;gap:12px}
+.user-card{display:flex;flex-direction:column;padding:14px;border-radius:8px;background:linear-gradient(180deg, #ffffff, #fbfdff);border:1px solid rgba(15,23,42,0.04)}
+.user-meta{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.user-name{font-weight:700;color:rgb(var(--accent-1))}
+.user-email{color:rgba(var(--muted),0.9);font-size:0.95rem}
+
+.sidebar{position:sticky;top:24px}
+.stats{display:flex;gap:12px;align-items:center}
+.stat{background:linear-gradient(180deg,#fff,#fbfdff);padding:12px;border-radius:8px;text-align:center;flex:1}
+.stat .num{font-size:1.2rem;font-weight:800;color:rgb(var(--accent-2))}
+
+.footer{padding:18px;text-align:center;color:rgba(var(--muted),0.9);font-size:0.9rem}
+
+/* Responsive */
+@media (max-width:900px){
+  .content{grid-template-columns:1fr;}
+  .header{flex-direction:column;align-items:flex-start;gap:12px}
+  .brand .logo{width:48px;height:48px}
+}
+
+/* small helpers */
+.muted{color:rgba(var(--muted),0.9)}

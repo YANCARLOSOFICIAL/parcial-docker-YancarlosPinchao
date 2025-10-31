@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Obtener datos del formulario
+$id = isset($_POST['id']) ? intval($_POST['id']) : null;
 $nombre = trim($_POST['nombre'] ?? '');
 $email = trim($_POST['email'] ?? '');
 
@@ -32,23 +33,40 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Verificar si el email ya existe
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
-    $stmt->execute([$email]);
-    $count = $stmt->fetchColumn();
-    
-    if ($count > 0) {
-        header('Location: index.php?error=El email ya está registrado');
+    if ($id) {
+        // Si llega un id, actualizamos el usuario
+        // Verificar si el email ya existe en otro registro
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ? AND id != ?");
+        $stmt->execute([$email, $id]);
+        $count = $stmt->fetchColumn();
+        if ($count > 0) {
+            header('Location: index.php?error=El email ya está registrado');
+            exit;
+        }
+
+        $stmt = $pdo->prepare("UPDATE users SET nombre = ?, email = ? WHERE id = ?");
+        $stmt->execute([$nombre, $email, $id]);
+        header('Location: index.php?success=updated');
+        exit;
+    } else {
+        // Insertar nuevo usuario
+        // Verificar si el email ya existe
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $count = $stmt->fetchColumn();
+
+        if ($count > 0) {
+            header('Location: index.php?error=El email ya está registrado');
+            exit;
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO users (nombre, email) VALUES (?, ?)");
+        $stmt->execute([$nombre, $email]);
+
+        // Redirigir con mensaje de éxito
+        header('Location: index.php?success=1');
         exit;
     }
-    
-    // Insertar nuevo usuario
-    $stmt = $pdo->prepare("INSERT INTO users (nombre, email) VALUES (?, ?)");
-    $stmt->execute([$nombre, $email]);
-    
-    // Redirigir con mensaje de éxito
-    header('Location: index.php?success=1');
-    exit;
     
 } catch (PDOException $e) {
     // Redirigir con mensaje de error
