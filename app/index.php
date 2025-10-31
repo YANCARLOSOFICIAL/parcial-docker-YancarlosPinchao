@@ -65,18 +65,34 @@
                     <div class="users-list">
                     <?php
                     // Configuración de conexión a la base de datos
-                    // Permitir sobrescribir el host desde .env (MYSQL_HOST or DB_HOST).
-                    $host = getenv('MYSQL_HOST') ?: (getenv('DB_HOST') ?: 'db');
+                    // Intentar varios hosts automáticamente para soportar entornos sin .env
+                    $preferred = getenv('MYSQL_HOST') ?: (getenv('DB_HOST') ?: 'db');
                     $dbname = $_ENV['MYSQL_DATABASE'] ?? getenv('MYSQL_DATABASE') ?: 'usuarios_db';
                     $username = $_ENV['MYSQL_USER'] ?? getenv('MYSQL_USER') ?: 'usuario';
                     $password = $_ENV['MYSQL_PASSWORD'] ?? getenv('MYSQL_PASSWORD') ?: 'password';
 
                     try {
-                        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        
-                        $stmt = $pdo->query("SELECT id, nombre, email FROM users ORDER BY id DESC");
-                        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $hostsToTry = array_unique([$preferred, 'host.docker.internal', '127.0.0.1']);
+                    $lastException = null;
+                    $pdo = null;
+                    foreach ($hostsToTry as $h) {
+                        try {
+                            $pdo = new PDO("mysql:host=$h;dbname=$dbname;charset=utf8mb4", $username, $password);
+                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                            // Si conecta, salimos del loop
+                            break;
+                        } catch (PDOException $e) {
+                            $lastException = $e;
+                            // intentar siguiente host
+                        }
+                    }
+
+                    if (!$pdo) {
+                        throw $lastException ?: new Exception('No se pudo establecer conexión con la base de datos');
+                    }
+
+                    $stmt = $pdo->query("SELECT id, nombre, email FROM users ORDER BY id DESC");
+                    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         if (count($users) > 0) {
                             foreach ($users as $user) {

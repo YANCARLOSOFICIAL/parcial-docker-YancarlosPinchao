@@ -23,17 +23,32 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Configuración de conexión a la base de datos
-// Permitir sobrescribir el host desde .env (MYSQL_HOST or DB_HOST).
-$host = getenv('MYSQL_HOST') ?: (getenv('DB_HOST') ?: 'db');
+// Permitir sobrescribir el host desde variables de entorno. Si no hay .env,
+// probamos varios hosts comunes (db, host.docker.internal, 127.0.0.1).
+$preferred = getenv('MYSQL_HOST') ?: (getenv('DB_HOST') ?: 'db');
 $dbname = $_ENV['MYSQL_DATABASE'] ?? getenv('MYSQL_DATABASE') ?: 'usuarios_db';
 $username = $_ENV['MYSQL_USER'] ?? getenv('MYSQL_USER') ?: 'usuario';
 $password = $_ENV['MYSQL_PASSWORD'] ?? getenv('MYSQL_PASSWORD') ?: 'password';
 
+$hostsToTry = array_unique([$preferred, 'host.docker.internal', '127.0.0.1']);
+$lastException = null;
+$pdo = null;
+foreach ($hostsToTry as $h) {
+    try {
+        $pdo = new PDO("mysql:host=$h;dbname=$dbname;charset=utf8mb4", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        break;
+    } catch (PDOException $e) {
+        $lastException = $e;
+    }
+}
+
+if (!$pdo) {
+    header('Location: index.php?error=' . urlencode('Error en la base de datos: ' . ($lastException ? $lastException->getMessage() : 'No se pudo conectar')));
+    exit;
+}
+
 try {
-    // Conectar a la base de datos
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
     if ($id) {
         // Si llega un id, actualizamos el usuario
         // Verificar si el email ya existe en otro registro
