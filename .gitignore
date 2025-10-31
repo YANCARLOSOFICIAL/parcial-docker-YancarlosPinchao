@@ -1,0 +1,27 @@
+# Archivo .gitignore para el proyecto Docker PHP + MySQL
+
+# Variables de entorno (contiene credenciales sensibles)
+.env
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Datos de MySQL (si se generan localmente)
+mysql-data/
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

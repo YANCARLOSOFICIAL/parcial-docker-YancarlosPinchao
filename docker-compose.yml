@@ -1,0 +1,49 @@
+services:
+  # Servicio de la aplicación PHP (usando imagen en Docker Hub)
+  app:
+    image: yancarlos45/php-app:1.0
+    container_name: php-app
+    ports:
+      - "8080:80"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Servicio de base de datos MySQL
+  db:
+    image: mysql:8
+    container_name: mysql-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      # Volumen para persistencia de datos
+      - mysql-data:/var/lib/mysql
+      # Script de inicialización
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# Definición de volúmenes
+volumes:
+  mysql-data:
+    driver: local
+
+# Definición de redes
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,269 @@
+# COMANDOS ÚTILES PARA EL PROYECTO
+# =====================================
+
+# 1. CONSTRUCCIÓN Y DESPLIEGUE DE LA IMAGEN
+# ------------------------------------------
+
+# Iniciar sesión en Docker Hub
+docker login
+
+# Construir la imagen (reemplazar 'usuario_dockerhub' con tu usuario)
+docker build -t usuario_dockerhub/php-app:1.0 ./app
+
+# Subir la imagen a Docker Hub
+docker push usuario_dockerhub/php-app:1.0
+
+# Verificar que la imagen fue subida correctamente
+# Visita: https://hub.docker.com/r/usuario_dockerhub/php-app
+
+
+# 2. GESTIÓN DE DOCKER COMPOSE
+# -----------------------------
+
+# Iniciar todos los servicios en segundo plano
+docker-compose up -d
+
+# Ver el estado de los contenedores
+docker-compose ps
+
+# Ver logs de todos los servicios
+docker-compose logs
+
+# Ver logs de un servicio específico
+docker-compose logs app
+docker-compose logs db
+
+# Seguir logs en tiempo real
+docker-compose logs -f
+
+# Detener todos los servicios
+docker-compose down
+
+# Detener y eliminar volúmenes (CUIDADO: elimina datos)
+docker-compose down -v
+
+# Reiniciar todos los servicios
+docker-compose restart
+
+# Reiniciar un servicio específico
+docker-compose restart app
+docker-compose restart db
+
+
+# 3. GESTIÓN DE CONTENEDORES INDIVIDUALES
+# ----------------------------------------
+
+# Listar contenedores en ejecución
+docker ps
+
+# Listar todos los contenedores (incluso detenidos)
+docker ps -a
+
+# Acceder al contenedor de la aplicación
+docker exec -it php-app bash
+
+# Acceder al contenedor de MySQL
+docker exec -it mysql-db bash
+
+# Conectar directamente a MySQL
+docker exec -it mysql-db mysql -u usuario -ppassword123 usuarios_db
+
+# Ver logs de un contenedor específico
+docker logs php-app
+docker logs mysql-db
+
+# Detener un contenedor
+docker stop php-app
+docker stop mysql-db
+
+# Iniciar un contenedor detenido
+docker start php-app
+docker start mysql-db
+
+# Eliminar un contenedor
+docker rm php-app
+docker rm mysql-db
+
+
+# 4. GESTIÓN DE IMÁGENES
+# -----------------------
+
+# Listar imágenes locales
+docker images
+
+# Eliminar una imagen
+docker rmi usuario_dockerhub/php-app:1.0
+
+# Descargar una imagen de Docker Hub
+docker pull usuario_dockerhub/php-app:1.0
+
+# Ver información detallada de una imagen
+docker inspect usuario_dockerhub/php-app:1.0
+
+
+# 5. GESTIÓN DE VOLÚMENES
+# ------------------------
+
+# Listar volúmenes
+docker volume ls
+
+# Ver información de un volumen
+docker volume inspect docker-php-mysql_mysql-data
+
+# Eliminar un volumen (CUIDADO: elimina datos)
+docker volume rm docker-php-mysql_mysql-data
+
+# Eliminar volúmenes no utilizados
+docker volume prune
+
+
+# 6. GESTIÓN DE REDES
+# --------------------
+
+# Listar redes
+docker network ls
+
+# Ver información de la red del proyecto
+docker network inspect docker-php-mysql_app-network
+
+# Eliminar red
+docker network rm docker-php-mysql_app-network
+
+
+# 7. COMANDOS DE MYSQL (dentro del contenedor)
+# ---------------------------------------------
+
+# Conectar a MySQL desde fuera del contenedor
+docker exec -it mysql-db mysql -u usuario -ppassword123 usuarios_db
+
+# Una vez dentro de MySQL, puedes ejecutar:
+SHOW DATABASES;
+USE usuarios_db;
+SHOW TABLES;
+SELECT * FROM users;
+DESCRIBE users;
+INSERT INTO users (nombre, email) VALUES ('Test User', 'test@example.com');
+EXIT;
+
+
+# 8. LIMPIEZA DEL SISTEMA
+# ------------------------
+
+# Eliminar todos los contenedores detenidos
+docker container prune
+
+# Eliminar todas las imágenes no utilizadas
+docker image prune
+
+# Eliminar todos los volúmenes no utilizados
+docker volume prune
+
+# Eliminar todas las redes no utilizadas
+docker network prune
+
+# Limpieza completa del sistema (CUIDADO)
+docker system prune -a --volumes
+
+
+# 9. COMANDOS DE GIT
+# -------------------
+
+# Inicializar repositorio
+git init
+
+# Ver estado de los archivos
+git status
+
+# Agregar todos los archivos
+git add .
+
+# Hacer commit
+git commit -m "Mensaje descriptivo"
+
+# Agregar repositorio remoto
+git remote add origin https://github.com/TU_USUARIO/docker-php-mysql.git
+
+# Subir cambios
+git push -u origin main
+
+# Ver historial de commits
+git log
+
+# Ver diferencias
+git diff
+
+
+# 10. DEBUGGING Y TROUBLESHOOTING
+# --------------------------------
+
+# Ver uso de recursos por contenedor
+docker stats
+
+# Inspeccionar un contenedor
+docker inspect php-app
+
+# Ver procesos corriendo en un contenedor
+docker top php-app
+
+# Copiar archivos desde/hacia un contenedor
+docker cp php-app:/var/www/html/index.php ./index.php
+docker cp ./index.php php-app:/var/www/html/
+
+# Ver eventos de Docker en tiempo real
+docker events
+
+# Verificar la salud de un contenedor
+docker inspect --format='{{.State.Health.Status}}' mysql-db
+
+
+# 11. RECONSTRUIR DESPUÉS DE CAMBIOS
+# -----------------------------------
+
+# Si modificaste el código fuente:
+docker build -t usuario_dockerhub/php-app:1.0 ./app
+docker push usuario_dockerhub/php-app:1.0
+docker-compose down
+docker-compose pull
+docker-compose up -d
+
+# O forzar recreación sin cache:
+docker build --no-cache -t usuario_dockerhub/php-app:1.0 ./app
+docker push usuario_dockerhub/php-app:1.0
+docker-compose down
+docker-compose up -d --force-recreate
+
+
+# 12. VERIFICACIONES ÚTILES
+# --------------------------
+
+# Verificar conectividad entre contenedores
+docker exec php-app ping db
+
+# Ver variables de entorno de un contenedor
+docker exec php-app env
+
+# Verificar versiones
+docker --version
+docker-compose --version
+docker exec php-app php --version
+docker exec mysql-db mysql --version
+
+# Ver espacio en disco usado por Docker
+docker system df
+
+
+# 13. BACKUP Y RESTORE DE BASE DE DATOS
+# --------------------------------------
+
+# Hacer backup de la base de datos
+docker exec mysql-db mysqldump -u usuario -ppassword123 usuarios_db > backup.sql
+
+# Restaurar desde backup
+docker exec -i mysql-db mysql -u usuario -ppassword123 usuarios_db < backup.sql
+
+
+# NOTAS IMPORTANTES:
+# - Reemplaza 'usuario_dockerhub' con tu nombre de usuario real de Docker Hub
+# - Las contraseñas aquí son de ejemplo, usa las de tu archivo .env
+# - Algunos comandos requieren permisos de administrador (sudo en Linux/Mac)
+# - Siempre verifica que Docker Desktop esté corriendo antes de ejecutar comandos
