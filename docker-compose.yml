@@ -6,9 +6,10 @@ services:
     ports:
       - "8080:80"
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      # Credenciales incluidas directamente (puedes cambiarlas aquí)
+      - MYSQL_DATABASE=usuarios_db
+      - MYSQL_USER=usuario
+      - MYSQL_PASSWORD=password123
     depends_on:
       - db
     networks:
@@ -20,10 +21,11 @@ services:
     image: mysql:8
     container_name: mysql-db
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      # Credenciales incluidas directamente (puedes cambiarlas aquí)
+      - MYSQL_ROOT_PASSWORD=rootpassword123
+      - MYSQL_DATABASE=usuarios_db
+      - MYSQL_USER=usuario
+      - MYSQL_PASSWORD=password123
     volumes:
       # Volumen para persistencia de datos
       - mysql-data:/var/lib/mysql
@@ -33,7 +35,7 @@ services:
       - app-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword123"]
       interval: 10s
       timeout: 5s
       retries: 5
