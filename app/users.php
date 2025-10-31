@@ -23,10 +23,11 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Configuración de conexión a la base de datos
-$host = 'db';
-$dbname = $_ENV['MYSQL_DATABASE'] ?? 'usuarios_db';
-$username = $_ENV['MYSQL_USER'] ?? 'usuario';
-$password = $_ENV['MYSQL_PASSWORD'] ?? 'password';
+// Permitir sobrescribir el host desde .env (MYSQL_HOST or DB_HOST).
+$host = getenv('MYSQL_HOST') ?: (getenv('DB_HOST') ?: 'db');
+$dbname = $_ENV['MYSQL_DATABASE'] ?? getenv('MYSQL_DATABASE') ?: 'usuarios_db';
+$username = $_ENV['MYSQL_USER'] ?? getenv('MYSQL_USER') ?: 'usuario';
+$password = $_ENV['MYSQL_PASSWORD'] ?? getenv('MYSQL_PASSWORD') ?: 'password';
 
 try {
     // Conectar a la base de datos

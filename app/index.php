@@ -65,10 +65,11 @@
                     <div class="users-list">
                     <?php
                     // Configuración de conexión a la base de datos
-                    $host = 'db';
-                    $dbname = $_ENV['MYSQL_DATABASE'] ?? 'usuarios_db';
-                    $username = $_ENV['MYSQL_USER'] ?? 'usuario';
-                    $password = $_ENV['MYSQL_PASSWORD'] ?? 'password';
+                    // Permitir sobrescribir el host desde .env (MYSQL_HOST or DB_HOST).
+                    $host = getenv('MYSQL_HOST') ?: (getenv('DB_HOST') ?: 'db');
+                    $dbname = $_ENV['MYSQL_DATABASE'] ?? getenv('MYSQL_DATABASE') ?: 'usuarios_db';
+                    $username = $_ENV['MYSQL_USER'] ?? getenv('MYSQL_USER') ?: 'usuario';
+                    $password = $_ENV['MYSQL_PASSWORD'] ?? getenv('MYSQL_PASSWORD') ?: 'password';
 
                     try {
                         $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
